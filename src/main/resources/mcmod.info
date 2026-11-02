@@ -1,0 +1,8 @@
+[{
+  "modid": "galacticshaders",
+  "name": "GalacticShaders",
+  "description": "Planetary atmosphere and surface lighting for Galacticraft, GalaxySpace, Angelica and Roxy.",
+  "version": "0.3.4-alpha",
+  "mcversion": "1.7.10",
+  "url": "https://github.com/fenflow/GalacticShaders"
+}]

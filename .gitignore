@@ -1,0 +1,7 @@
+build/
+
+dist/
+docs/
+AGENTS.md
+screenshots/*
+!screenshots/planet-*.jpg
