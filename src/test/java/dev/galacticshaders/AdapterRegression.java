@@ -9,6 +9,11 @@ import micdoodle8.mods.galacticraft.api.galaxies.*;
 /** Run against user-supplied original packs. No shader-pack source is redistributed. */
 public final class AdapterRegression {
     public static void main(String[] args) throws Exception {
+        require(StationLighting.environment("planet.overworld") == Environment.STATION_EARTH, "Earth station fallback");
+        require(StationLighting.environment("planet.venus") == Environment.STATION_VENUS, "Venus station uses surface lighting");
+        require(StationLighting.environment("planet.neptune") == Environment.STATION_NEPTUNE, "Outer station loses parent");
+        require(Environment.STATION_VENUS.vacuum && Environment.STATION_VENUS.defines.contains("GS_SUN 1.91"),
+            "Venus orbit must receive unattenuated sunlight");
         Properties localized = new Properties();
         String label = "\u03b1 Centauri Bb";
         localized.load(new ByteArrayInputStream(("body=" + PackAdapter.propertyName(label)).getBytes("ISO-8859-1")));
@@ -53,6 +58,17 @@ public final class AdapterRegression {
                 }
                 if (archive.startsWith("photon")) require(read(result,"shaders/program/d2_clouds_upscaling.fsh").contains("gsDepthFetch(lod_depth_tex_shading, dst_texel"),"Unbounded Roxy fallback depth fetch");
                 String pluto=read(result,"shaders/galactic_kuiper/gbuffers_terrain.fsh");
+                String station=read(result,"shaders/galactic_station_venus/gbuffers_terrain.fsh");
+                require(station.contains("#define GS_STATION") && station.contains("#define GS_ORBIT 1.0"),
+                    "Station atmosphere depends on block altitude");
+                if (archive.startsWith("photon")) {
+                    String atmosphere=read(result,"shaders/include/sky/atmosphere.glsl");
+                    require(atmosphere.split("#ifdef GS_STATION\nreturn vec3\\(1.0\\);", -1).length == 3,
+                        "Photon must preserve below-horizon station bodies in both transmittance paths");
+                    require(read(result,"shaders/include/sky/sky.glsl").contains(
+                        "#ifndef GS_STATION\nsky = mix(sky, vec3(0.0), underground_sky_fade);"),
+                        "Photon cave fade must not hide planets below stations");
+                }
                 require(pluto.contains("GS_SUN 6.0E-4") && pluto.contains("GS_DAY_STARS 0.62"),"Pluto lost physical solar flux or daytime stars");
                 String terrain=pluto.split("GS_TERRAIN_SUN ")[1].split("\\s+")[0];
                 require(Double.parseDouble(terrain)>0.10 && Double.parseDouble(terrain)<0.20,"Pluto daylight outside chosen range");

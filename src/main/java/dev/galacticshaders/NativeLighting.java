@@ -227,6 +227,9 @@ final class NativeLighting {
                 "if(closest.z>=1.0) { vec3 gsNow=texture(colortex0,clamp(uv*taau_render_scale,0.5*view_pixel_size,taau_render_scale-0.5*view_pixel_size)).rgb; result=vec4(gsNow,texel==ivec2(0)?exposure:1.0); bloom_input=gsNow; return; }");
         }
         if (path.endsWith("/sky/sky.glsl")) {
+            // Orbit worlds have no terrain horizon or underground sky fade.
+            s=s.replace("sky = mix(sky, vec3(0.0), underground_sky_fade);",
+                "#ifndef GS_STATION\nsky = mix(sky, vec3(0.0), underground_sky_fade);\n#endif");
             s=enter(s,"draw_moon","return vec4(0.0);");
             return enter(s,"draw_sun","if(GS_NATIVE_SUN==1) return vec3(0.0); float gsR=clamp(0.011*sqrt(GS_SUN),0.003,0.045); float gsD=length(ray_dir-sun_dir)/gsR; return GS_LIGHT_COLOR * (4.0*(1.0-smoothstep(0.72,1.22,gsD))+0.15*exp(-1.6*gsD))*(GS_PLANET==2?GS_ORBIT:1.0);");
         }
@@ -242,6 +245,8 @@ final class NativeLighting {
             + "frag_color=pow(max(gsBody.rgb*tint,vec3(0.0)),vec3(2.2))*rec709_to_working_color;\n"
             + "frag_color *= (GS_PLANET==2 ? GS_ORBIT : 1.0); return;");
         if (path.endsWith("/sky/atmosphere.glsl")) {
+            s=s.replace("vec3 atmosphere_transmittance(float mu, float r) {",
+                "vec3 atmosphere_transmittance(float mu, float r) {\n#ifdef GS_STATION\nreturn vec3(1.0);\n#endif\n");
             s=before(s,"// Calculate nu, mu, mu_s",sky("ray_dir.y","sun_dir.y*3.0"));
             s=before(s,"vec3 uv = atmosphere_scattering_uv(nu, mu, mu_s);",sky("mu","mu_s*3.0"));
             return s;

@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.io.IOException;
 
-@Mod(modid="galacticshaders", name="GalacticShaders", version="0.3.4-alpha",
+@Mod(modid="galacticshaders", name="GalacticShaders", version="0.3.5-alpha",
      acceptableRemoteVersions="*", dependencies="required-after:GalacticraftCore;required-after:angelica;after:GalaxySpace")
 public final class GalacticShaders {
     private Path packs;
@@ -19,6 +19,7 @@ public final class GalacticShaders {
     @Mod.EventHandler public void generate(FMLLoadCompleteEvent event) {
         if (packs == null) return;
         Map<Environment,Set<String>> names = new EnumMap<>(Environment.class);
+        for (Environment env : Environment.values()) if (env.station()) names.computeIfAbsent(env, key -> new TreeSet<>()).add(env.folder());
         List<CelestialBody> bodies = new ArrayList<>(GalaxyRegistry.getRegisteredPlanets().values());
         bodies.addAll(GalaxyRegistry.getRegisteredMoons().values());
         for (CelestialBody body : bodies) {

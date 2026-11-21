@@ -6,6 +6,13 @@ import micdoodle8.mods.galacticraft.api.galaxies.Moon;
 
 /** Relative direct solar irradiance, diffuse sky fill and atmospheric extinction per block. */
 enum Environment {
+    STATION_EARTH(1,1.0,0,0,"0.0"),
+    STATION_VENUS(1,1.91,0,0,"0.0"),
+    STATION_MARS(1,0.43,0,0,"0.0"),
+    STATION_JUPITER(1,0.037,0,0,"0.0"),
+    STATION_SATURN(1,0.011,0,0,"0.0"),
+    STATION_URANUS(1,0.002,0,0,"0.0"),
+    STATION_NEPTUNE(1,0.0011,0,0,"0.0"),
     MOON(1,1.0,0,0,"0.0"),
     MERCURY(1,6.6,0,0,"0.0"),
     MARTIAN_MOON(1,0.43,0,0,"0.0"),
@@ -43,7 +50,7 @@ enum Environment {
         vacuum = kind == 1;
         boolean outer=kind==1 && sun<=0.037;
         double terrain=(outer || name().equals("TITAN")) ? 0.12 + 0.32*Math.sqrt(sun) : sun;
-        defines = (name().equals("ASTEROIDS") ? "#define GS_ASTEROIDS\n" : "") + "#define GS_TERRAIN_SUN " + terrain + "\n#define GS_DAY_STARS " + (outer ? "0.62" : "0.0") + "\n" + "#define GS_PLANET " + kind + "\n#define GS_SUN " + sun + "\n#define GS_FILL " + diffuse
+        defines = (station() ? "#define GS_STATION\n" : "") + (name().equals("ASTEROIDS") ? "#define GS_ASTEROIDS\n" : "") + "#define GS_TERRAIN_SUN " + terrain + "\n#define GS_DAY_STARS " + (outer ? "0.62" : "0.0") + "\n" + "#define GS_PLANET " + kind + "\n#define GS_SUN " + sun + "\n#define GS_FILL " + diffuse
             + "\n#define GS_EXTINCTION " + extinction + "\n#define GS_TINT vec3(" + color + ")\n"
             + "#define GS_LIGHT_COLOR vec3(" + lightColor + ")\n#define GS_STARS " + (kind == 2 ? "0.0" : "1.0") + "\n";
         // Amun-Ra and BartWorks supply their own star textures, including Amun-Ra's companion star.
@@ -86,6 +93,7 @@ enum Environment {
         return parent != null && parent.getRelativeDistanceFromCenter() != null
             && parent.getRelativeDistanceFromCenter().unScaledDistance > 1.4 ? OUTER_VACUUM : MOON;
     }
+    boolean station() { return name().startsWith("STATION_"); }
     String folder() { return "galactic_" + name().toLowerCase(Locale.ROOT); }
     boolean nativeSun() {
         return this == HORUS || this == NEPER || this == MAAHES || this == SETH || this == ANUBIS

@@ -20,6 +20,8 @@ Install GalacticShaders in your client mods folder and one supported shader pack
 
 Clear outer worlds show daytime stars. Pluto receives enough daylight to distinguish ridges while their shaded faces stay dark.
 
+Space stations around Earth, Venus, Mars, Jupiter, Saturn, Uranus and Neptune use vacuum skies and lighting matched to their parent planet.
+
 ## AI disclosure
 
 This mod was mostly written with AI. If that's not your thing, don't use it. Despite that, the mod works, and is maintained. If you find any bugs, or visual glitches, or have any suggestions, then please tell about them in the issues page!

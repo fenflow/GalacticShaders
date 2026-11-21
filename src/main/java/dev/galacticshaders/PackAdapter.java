@@ -75,7 +75,7 @@ final class PackAdapter {
         // Voxy supplies cameraPosition through its existing uniform buffer.
         String input = path.contains("/voxy_") ? "#define GS_VOXY\n#define GS_HEIGHT cameraPosition.y\n"
             : "#define GS_HEIGHT gsEyeAltitude\n";
-        return input + "#define GS_ORBIT smoothstep(255.0,800.0,GS_HEIGHT)\n"
+        return input + "#ifdef GS_STATION\n#define GS_ORBIT 1.0\n#else\n#define GS_ORBIT smoothstep(255.0,800.0,GS_HEIGHT)\n#endif\n"
             + "#define GS_AIR (1.0-GS_ORBIT)\n";
     }
     static String propertyName(String name) {
